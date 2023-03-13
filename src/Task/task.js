@@ -64,6 +64,7 @@ export default class Task extends React.Component {
   pauseTimer = () => {
     if (this.state.timer) {
       clearInterval(this.state.timer)
+      this.setState({timer: null})
     }
   }
 
