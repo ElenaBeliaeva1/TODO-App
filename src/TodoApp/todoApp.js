@@ -8,7 +8,7 @@ import './todoApp.css'
 export default class TodoApp extends React.Component {
   maxId = 100
 
-  createTask = (text) => {
+  createTask = (text, min, sec) => {
     const date = new Date()
     this.maxId += 1
     const newItem = {
@@ -17,6 +17,8 @@ export default class TodoApp extends React.Component {
       completed: false,
       created: date,
       id: this.maxId,
+      min: min,
+      sec: sec,
     }
     return newItem
   }
@@ -35,9 +37,10 @@ export default class TodoApp extends React.Component {
     })
   }
 
-  addingTask = (text, data) => {
+  addingTask = (text, min, sec) => {
     this.setState(({ todos }) => {
-      const newItem = this.createTask(text, data)
+      const newItem = this.createTask(text, min, sec)
+      console.log(newItem)
       return {
         todos: [...todos, newItem],
       }

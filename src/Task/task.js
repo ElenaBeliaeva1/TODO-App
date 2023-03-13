@@ -9,8 +9,9 @@ export default class Task extends React.Component {
     completingTask: PropTypes.func,
     completed: PropTypes.bool,
     description: PropTypes.string,
-    created: PropTypes.bool,
     deletingTask: PropTypes.func,
+    min: PropTypes.number,
+    sec: PropTypes.number,
   }
 
   static defaultProps = {
@@ -22,53 +23,56 @@ export default class Task extends React.Component {
   }
 
   state = {
-    time: 0,
-    timerInterval: 0,
+    min: this.props.min,
+    sec: this.props.sec,
+    timer: null,
     formattedTime: '00:00:00',
   }
 
-  updateTimer = async () => {
-    const newTime = this.state.time + 1
-    await this.setState(() => {
-      return {
-        time: newTime,
+  startTimer = () => {
+    if (!this.state.timer) {
+      console.log(this.state.min, this.state.sec)
+      let totalSeconds = this.state.min * 60 + this.state.sec
+      if (totalSeconds <= 0) {
+        this.pauseTimer()
+        return
       }
-    })
-    const hours = Math.floor(this.state.time / 3600)
-    const minutes = Math.floor((this.state.time % 3600) / 60)
-    const seconds = this.state.time % 60
-    const newFormattedTime = `${this.pad(hours)}:${this.pad(minutes)}:${this.pad(seconds)}`
-    this.setState({
-      formattedTime: newFormattedTime,
-    })
-  }
-
-  startTimer = async () => {
-    if (!this.state.timerInterval) {
-      const newTimerInterval = setInterval(this.updateTimer, 1000)
-      await this.setState(() => {
-        return {
-          timerInterval: newTimerInterval,
+      const newTimer = setInterval(() => {
+        if (this.state.min * 60 + this.state.sec <= 0) {
+          this.pauseTimer()
+          return
         }
-      })
+        if (this.state.sec >= 1) {
+          this.setState(() => {
+            return {
+              sec: this.state.sec - 1,
+            }
+          })
+        } else {
+          this.setState(() => {
+            return {
+              min: this.state.min - 1,
+              sec: this.state.sec + 59,
+            }
+          })
+        }
+      }, 1000)
+      this.setState({ timer: newTimer })
     }
   }
 
   pauseTimer = () => {
-    clearInterval(this.state.timerInterval)
-    this.setState({ timerInterval: 0 })
+    if (this.state.timer) {
+      clearInterval(this.state.timer)
+    }
   }
 
-  resetTimer = () => {
-    clearInterval(this.state.timerInterval)
-    this.setState({ time: 0, timerInterval: 0, formattedTime: '00:00:00' })
-  }
-
-  pad = (number) => {
-    if (number < 10) {
-      return `0${number}`
+  pad = (val) => {
+    let valString = val + ''
+    if (valString.length < 2) {
+      return '0' + valString
     } else {
-      return number
+      return valString
     }
   }
 
@@ -94,17 +98,10 @@ export default class Task extends React.Component {
           <span className="description" onClick={completingTask}>
             {description}
           </span>
-          <div>
-            <p id="timer">{this.state.formattedTime}</p>
-            <button id="startBtn" className="icon-timer icon-start" onClick={() => this.startTimer()}>
-              Старт
-            </button>
-            <button id="pauseBtn" className="icon-timer icon-pause" onClick={() => this.pauseTimer()}>
-              Пауза
-            </button>
-            <button id="resetBtn" className="icon-timer icon-reset" onClick={() => this.resetTimer()}>
-              Сбросить
-            </button>
+          <div className="timer">
+            <p id="timer">{`${this.pad(this.state.min)}:${this.pad(this.state.sec)}`}</p>
+            <button id="startBtn" className="icon-timer icon-start" onClick={() => this.startTimer()} />
+            <button id="pauseBtn" className="icon-timer icon-pause" onClick={() => this.pauseTimer()} />
           </div>
           <span className="created">{formatDistanceToNow(created)} ago</span>
         </label>

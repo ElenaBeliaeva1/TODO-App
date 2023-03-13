@@ -233,3 +233,24 @@
 .icon-timer:active, .icon-timer:hover {
   border: 1px solid grey;
 }
+
+.icon-start:before{
+  content: '❯';
+}
+
+.icon-pause::before{
+  content: '⏸';
+}
+
+.timer{
+  display: flex;
+}
+
+.icon-start, .icon-pause {
+  width: 40px;
+  height: auto;
+}
+
+.icon-start{
+  margin-left: 20px;
+}
