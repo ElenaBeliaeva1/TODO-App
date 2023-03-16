@@ -1,134 +1,102 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
 
 import NewTaskForm from '../NewTaskForm/newTaskForm'
 import TaskList from '../TaskList/taskList'
 import Footer from '../Footer/footer'
 import './todoApp.css'
 
-export default class TodoApp extends React.Component {
-  maxId = 100
-
-  createTask = (text, min, sec) => {
+const TodoApp = () => {
+  const [todos, setTodos] = useState([])
+  const maxId = useRef(100)
+  const createTask = (text, min, sec) => {
     const date = new Date()
-    this.maxId += 1
+    maxId.current += 1
     const newItem = {
       description: text,
       filtered: false,
       completed: false,
       created: date,
-      id: this.maxId,
+      id: maxId.current,
       min: min,
       sec: sec,
     }
     return newItem
   }
-
-  state = {
-    todos: [],
-  }
-
-  deletingTask = (id) => {
-    this.setState(({ todos }) => {
+  const deletingTask = (id) => {
+    setTodos((todos) => {
       const newTodos = todos.filter((el) => el.id !== id)
-
-      return {
-        todos: newTodos,
-      }
+      return [...newTodos]
     })
   }
-
-  addingTask = (text, min, sec) => {
-    this.setState(({ todos }) => {
-      const newItem = this.createTask(text, min, sec)
-      console.log(newItem)
-      return {
-        todos: [...todos, newItem],
-      }
+  const addingTask = (text, min, sec) => {
+    setTodos((todos) => {
+      const newItem = createTask(text, min, sec)
+      const newTodos = [...todos, newItem]
+      return [...newTodos]
     })
   }
-
-  completingTask = (id) => {
-    this.setState(() => {
-      const { todos } = this.state
+  const completingTask = (id) => {
+    setTodos((todos) => {
       const idx = todos.findIndex((el) => el.id === id)
       const oldItem = todos[idx]
       const newItem = { ...oldItem, completed: !oldItem.completed }
       const newTodos = todos
       newTodos[idx] = newItem
-      return {
-        todos: newTodos,
-      }
+      return [...newTodos]
     })
   }
-
-  clearingTaskList = () => {
-    this.setState(({ todos }) => {
-      const newTodos = todos.filter((el) => el.completed === false)
-      return {
-        todos: newTodos,
-      }
-    })
+  const clearingTaskList = () => {
+    setTodos(todos.filter((el) => el.completed === false))
   }
-
-  addFilterAll = () => {
-    const newArr = this.state.todos.map((elem) => {
-      const result = { ...elem, filtered: false }
-      return result
-    })
-
-    this.setState(() => ({
-      todos: newArr,
-    }))
-  }
-
-  addFilterActive = () => {
-    const newArr = this.state.todos.map((elem) => {
-      let result
-      if (elem.completed) {
-        result = { ...elem, filtered: true }
-      } else {
-        result = { ...elem, filtered: false }
-      }
-      return result
-    })
-
-    this.setState(() => ({
-      todos: newArr,
-    }))
-  }
-
-  addFilterComplete = () => {
-    const newArr = this.state.todos.map((elem) => {
-      let result
-      if (elem.completed) {
-        result = { ...elem, filtered: false }
-      } else {
-        result = { ...elem, filtered: true }
-      }
-      return result
-    })
-
-    this.setState(() => ({
-      todos: newArr,
-    }))
-  }
-
-  render() {
-    const itemsLeftCount = this.state.todos.filter((el) => el.completed === false).length
-    return (
-      <section className="todoapp">
-        <NewTaskForm addingTask={this.addingTask} />
-
-        <TaskList todos={this.state.todos} deletingTask={this.deletingTask} completingTask={this.completingTask} />
-
-        <Footer
-          itemsLeftCount={itemsLeftCount}
-          clearingTaskList={this.clearingTaskList}
-          addFilterAll={this.addFilterAll}
-          addFilterActive={this.addFilterActive}
-          addFilterComplete={this.addFilterComplete}
-        />
-      </section>
+  const addFilterAll = () => {
+    setTodos(
+      todos.map((elem) => {
+        const result = { ...elem, filtered: false }
+        return result
+      })
     )
   }
+  const addFilterActive = () => {
+    const newArr = todos.map((elem) => {
+      let result
+      if (elem.completed) {
+        result = { ...elem, filtered: true }
+      } else {
+        result = { ...elem, filtered: false }
+      }
+      return result
+    })
+    setTodos(newArr)
+  }
+  const addFilterComplete = () => {
+    const newArr = todos.map((elem) => {
+      let result
+      if (elem.completed) {
+        result = { ...elem, filtered: false }
+      } else {
+        result = { ...elem, filtered: true }
+      }
+      return result
+    })
+
+    setTodos(newArr)
+  }
+  const itemsLeftCount = todos.filter((el) => el.completed === false).length
+  return (
+    <section className="todoapp">
+      <NewTaskForm addingTask={addingTask} />
+
+      <TaskList todos={todos} deletingTask={deletingTask} completingTask={completingTask} />
+
+      <Footer
+        itemsLeftCount={itemsLeftCount}
+        clearingTaskList={clearingTaskList}
+        addFilterAll={addFilterAll}
+        addFilterActive={addFilterActive}
+        addFilterComplete={addFilterComplete}
+      />
+    </section>
+  )
 }
+
+export default TodoApp

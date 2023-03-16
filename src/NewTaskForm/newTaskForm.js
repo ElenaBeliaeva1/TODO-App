@@ -15,8 +15,6 @@ const NewTaskForm = ({ addingTask }) => (
           sec -= 60
         }
         addingTask(e.target[1].value, min, sec)
-        console.log(e.target[1].value, e.target[2].value, e.target[3].value)
-        console.log('hi')
         e.target[1].value = ''
         e.target[2].value = ''
         e.target[3].value = ''
