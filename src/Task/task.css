@@ -221,3 +221,36 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.icon-timer{
+  border: 1px solid black;
+  background-color: white;
+  border-radius: 5px;
+  padding: 2px;
+  margin: 5px;
+}
+
+.icon-timer:active, .icon-timer:hover {
+  border: 1px solid grey;
+}
+
+.icon-start:before{
+  content: '❯';
+}
+
+.icon-pause::before{
+  content: '⏸';
+}
+
+.timer{
+  display: flex;
+}
+
+.icon-start, .icon-pause {
+  width: 40px;
+  height: auto;
+}
+
+.icon-start{
+  margin-left: 15px;
+}
